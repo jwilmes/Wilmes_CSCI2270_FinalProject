@@ -12,20 +12,64 @@ using std::vector;
 using std::queue;
 
 Graff::Graff(){
-//builds the "graff" (graph) that is to be used.
+/*Prototype:
+    Graff();
+
+    Description:
+    builds the "Graff" (graph) that is to be used.
+
+    Example:
+    Graff * G = new Graff();
+
+    Precondition:
+    No Graff of the name requested
+
+    Postcondition:
+    A new Graff exists that can be modified using the functions in Graff.h
+*/
     runT=0;
     versize = 0;
 }
 
 
 Graff::~Graff(){
-//Deletes the "graff"
+    /*Prototype:
+    ~Graff();
+
+    Description:
+    Clears the content for the Graff.
+
+    Example:
+    delete G (note that G is a Graff *)
+
+    Precondition:
+    Graff exists
+
+    Postcondition:
+    vector variables within the Graff are cleared.
+*/
     vertices.clear();
 }
 
 
 void Graff::addEdge(string v1, string v2, int weight){
-    /*Adds edges (connections) for nodes already existing on the graph*/
+    /*Prototype:
+    void addEdge(string, string, int);
+
+    Description:
+    Adds edges (connections) for nodes already existing on the graph.
+        Creates a connection of weight 'weight' starting from the node with name 'v1' and ending at the node
+        with the name 'v2'.
+
+    Example:
+    addEdge("Freezer","Oven",5);
+
+    Precondition:
+    Expects two strings and an int.  Other input will cause glitches or crashes.  There should be more than one
+    node/vertex in existences before trying to create connections.
+    Postcondition:
+    The adjacency matrix of the node 'v1' is updated to include a path to node 'v2' of weight 'weight'.
+    */
     runT=0;
     for(int i = 0; i < vertices.size(); i++){
         if(vertices[i]->name == v1){
@@ -44,11 +88,29 @@ void Graff::addEdge(string v1, string v2, int weight){
             }
         }
     }
+    if(i>=vertices.size()){
+        cout<<"Origin of connection does not exist"<<endl;
+    }
 }
 
 
 void Graff::addVertex(string n){
-    /*Inserts nodes into the graph (Graff), insuring that identical nodes don't exist*/
+    /*Prototype:
+    void addVertex(string);
+
+    Description:
+    Inserts nodes into the graph (Graff).  If a node already exists with the name requested, returns an
+    error message stating so.
+
+    Example:
+    G->addVertex("Handerson");
+
+    Precondition:
+    No vertex of name 'n' exists.
+
+    Postcondition:
+    A new vertex of name 'n' is added to the array 'vertices'.
+    */
     runT=0;
     bool found = false; runT++;
     for(int i = 0; i < vertices.size(); i++){
@@ -68,8 +130,20 @@ void Graff::addVertex(string n){
 
 
 void Graff::displayEdges(){
-    /*loops through all vertices and adjacent vertices
-    and displays the connections of each
+    /*Prototype:
+    void displayEdges();
+
+    Description:
+    Displays all vertices and their connections.  Starts with the vertex at the beginning of the
+    vertices array, and ends with the vertex at the end of that array.
+
+    Example:
+    G->displayEdges();
+
+    Precondition:
+    There are nodes/vertices already in existance, and at least one of them has a connection.
+    Postcondition:
+    The names of the vertices are displayed, along with the connections they have.
     */
     int i=0;
     for(i = 0; i < vertices.size(); i++){
@@ -84,9 +158,22 @@ void Graff::displayEdges(){
 
 
 void Graff::displayVertices(){
-    /*Displays all vertices and connections in the Graff
-    Created: April, 2015
-    by Justin Wilmes*/
+    /*Prototype:
+    void displayVertices();
+
+    Description:
+    Displays the vertices contained in each zone and the largest zone.  Zones are groupings of vertices
+    that can only be accessed by other vertices within that zone.
+
+    Example:
+    G->displayVertices();
+
+    Precondition:
+    The Graff G has vertices.  It is best if the organizing function is called so that the zones are
+    displayed; otherwise a "zones not determined" error is given.
+    Postcondition:
+    The zones are displayed, along with the vertices in each zone.
+    */
     //loop through vertices:
     int i;
     int ar[vertices.size()];
@@ -123,9 +210,23 @@ void Graff::displayVertices(){
 }
 
 
-void Graff::BFTraversal(string startingCity){
-/*A breadth-first traversal through the graph to determine connections.
-    Created: April, 2015
+void Graff::BFTraversal(string starting){
+    /*Prototype:
+    void BFTransversal(string)
+
+    Description:
+    A breadth-first traversal through the graph to determine connections.  It's workings
+    are similar to the BFS function, except that this function has the purpose of printing
+    node connections rather than determining zones (districts).
+
+    Example:
+    G->BFTraversal("Bedroom");
+
+    Precondition:
+    Expects there to be vertices and the vertices to have connections.
+    Postcondition:
+    Displays the vertices and their connections as they are visited, starting from the node
+    'starting' and ending when all nodes within a zone have been visited.
 */
 //Pseudocode:
     /*let Q be a queue
@@ -145,7 +246,7 @@ void Graff::BFTraversal(string startingCity){
         vertices[i]->visited = false;  runT++;
     }
     for(int j = 0; j < vertices.size(); j++){
-        if(vertices[j]->name == startingCity){
+        if(vertices[j]->name == starting){
             v = vertices[j];  runT++;
             v->visited = true;  runT++;
         }
@@ -172,8 +273,22 @@ void Graff::BFTraversal(string startingCity){
 
 
 void Graff::Dijkstra(string start, string dest){
-    /*Dijkstra's (greedy) shortest path algorithm to determine distances between point
-    for the given Graff.
+    /*Prototype:
+    void Dijkstra(string,string);
+
+    Description:
+    Dijkstra's (greedy) shortest path algorithm to determine distances between point
+    for the given Graff.  Expects the names of the starting and ending nodes; returns
+    an error message if either node is not found, or if there is no possible path between
+    them.
+
+    Example:
+    G->Dijkstra("Bed","Coffee");
+
+    Precondition:
+    The nodes requested should exist, otherwise an error message will be returned.
+    Postcondition:
+    An array containing each node within the shortest path is created, traversed, and printed.
     */
     runT=0;
     vertex *u;  runT++;
@@ -247,10 +362,25 @@ void Graff::Dijkstra(string start, string dest){
 }
 
 
-queueVertex * Graff::BFSearch(std::string start, std::string destination){
-    /*conducts a breadth-first search on the Graff, starting from the node containing
+queueVertex * Graff::BFSearch(string start, string destination){
+    /*Prototype:
+    queueVertex * BFSearch(string,string);
+
+    Description:
+    Conducts a breadth-first search on the Graff, starting from the node containing
     'start' and ending at the node containing 'destination'.  Will not try to find paths
-    that do not exist.*/
+    that do not exist; will give an error message if such a path is requested.
+
+    Example:
+    G->BFSearch("Doorway","Shoe Rack");
+
+    Precondition:
+    Must input strings to avoid crashing.  The nodes containing 'start' and 'destination'
+    should exist, otherwise will throw an error message.  There should also be a path between
+    'start' and 'destination'.
+    Postcondition:
+    An array containing the path from 'start' to 'destination' search is created, traversed, and printed.
+    */
     runT=0;
     vertex *s=NULL;  runT++;
     vertex *d=NULL;  runT++;
@@ -323,8 +453,22 @@ queueVertex * Graff::BFSearch(std::string start, std::string destination){
 
 
 void Graff::findDistricts(){
-    /*Determines which nodes contain connections, and sets a grouping
-    variable contained in each node as needed*/
+    /*Prototype:
+    void findDistricts();
+
+    Description:
+    Determines which nodes contain connections, and sets a grouping/zoning
+    variable contained in each node as needed.
+
+    Example:
+    G->findDistricts();
+
+    Precondition:
+    Assumes that nodes exist and have connections.
+    Postcondition:
+    The vertex variable 'district' is set to an int pertaining to the zone which it is in.
+    All nodes that are connected are sent to the same zone.
+    */
     runT=0;
     for(int i=0;i<vertices.size();i++){
         vertices[i]->visited = false;  runT++;
@@ -343,9 +487,23 @@ void Graff::findDistricts(){
 
 
 void Graff::BFS(vertex *s, int k){
-    /*Conducts a breadth-first search on the Graff to determine which nodes are
+    /*Prototype:
+    void BFS(vertex*, int);
+
+    Description:
+    Conducts a breadth-first search on the Graff to determine which nodes are
     connected, and sets a grouping variable contained in each node as needed.
-    Is used by other functions to determine the connectivity of the Graff.*/
+    Is used by other functions to determine the connectivity of the Graff.
+
+    Example:
+    BFS(randomVertex,10);
+
+    Precondition:
+    The vertex* 's' should exist, otherwise will segmentation fault.
+    Postcondition:
+    The district variable for 's' and all vertices connected to it are set to the same value
+    'k'.  This is useful for checking whether vertices are connected.
+    */
     s->visited = true;  runT++;
     s->district = k;  runT++;
     queue<vertex *> Q;  runT++;
@@ -369,8 +527,22 @@ void Graff::BFS(vertex *s, int k){
 
 
 void Graff::visSet(){
-    /*Sets the initial conditions needed by every traversal/search/distance algorithm
-    in this graph (Graff) implementation*/
+    /*Prototype:
+    void visSet();
+
+    Description:
+    Sets the basic initial conditions required by most of the searching algorithms, the notable exception being
+    the Dijkstra algorithm, which requires the distance variable to be set to INT_MAX.
+
+    Example:
+    visSet();
+
+    Precondition:
+    Expects there to be some vertices in existence.
+    Postcondition:
+    The 'visited' variable for each node/vertex is set to false, the 'previous' for each is set to NULL,
+    and the 'distance' for each is set to 0.
+    */
     for(int j=0;j<vertices.size();j++){
         vertices[j]->visited = false;  runT++;
         vertices[j]->previous = NULL;   runT++;
@@ -380,6 +552,21 @@ void Graff::visSet(){
 
 
 vertex * Graff::Vfinder(string s,vertex * v){
+    /*Prototype:
+    vertex * Vfinder(string, vertex* );
+
+    Description:
+    Determines which node contains the name 's', and sets the pointer 'v' to point to that node.
+    Returns a NULL pointer if no node of name 's' is found.
+
+    Example:
+    Vfinder("Garage", Garr);
+
+    Precondition:
+    Must be sent a string and vertex*, else will crash.  Assumes that there are vertices to find.
+    Postcondition:
+    Returns the address of the vertex of the name 's'.
+    */
     v=NULL;  runT++;
     int i=0; runT++;
     v=vertices[i++]; runT++;
@@ -391,8 +578,23 @@ vertex * Graff::Vfinder(string s,vertex * v){
 
 
 queueVertex * Graff::DFSearch(string start, string destination){
-    /*Conducts a depth-first search of the Graff to determine a connection between nodes.
-    Returns the first connection found, which may not be the shortest*/
+    /*Prototype:
+    queueVertex * DFSearch(string, destination)
+
+    Description:
+    Conducts a depth-first search of the Graff to determine a connection between nodes.
+    Returns the first connection route found, which may not be the shortest
+
+    Example:
+    G->DFSearch("Attic","Cellar");
+
+    Precondition:
+    Assumes that there are nodes 'start' and 'destination', and that they are connected; otherwise
+    throws an error.
+    Postcondition:
+    Creates and prints an array containing all the vertices on the path searched before finding
+    'destination'.
+    */
     runT=0;
     vertex *s;  runT++;
     vertex *d;  runT++;
@@ -461,23 +663,25 @@ queueVertex * Graff::DFSearch(string start, string destination){
 }
 
 
-/*int Graff::hashSum(string x, int s){
-    /*Contains a hash-sum used by the hashtable contained within the Graff function.
-    It is not to be confused with other hash-table functions potentionally used by a function
-    calling Graff*//*
-    //x is string to hash, s is array size
-    int sum = 0;  runT++;
-    for(int i = 0;i<x.length();i++){
-        sum += x[i];   runT++;//ascii char of ith val in string
-    }
-    sum = sum % s;  runT++;
-    return sum;  runT++;
-}*/
-
-
 
 void Graff::delV(string name){
-    /*Deletes the node containing the string name*/
+    /*Prototype:
+    void delV(string);
+
+    Description:
+    Deletes the node containing the string 'name'; if no node contains 'name', then
+    will send an error message explaining that there is no node containing 'name' and
+    return.
+
+    Example:
+    G->delV("Useless Wall");
+
+    Precondition:
+    The object to be deleted should exist.
+    Postcondition:
+    The object of name 'name' is removed from 'vertices' and the connection arrays of every node
+    that connected to it.
+    */
     int h=0;
     //find node
     while(vertices[h]->name != name && h<vertices.size()){
@@ -506,8 +710,23 @@ void Graff::delV(string name){
 
 
 void Graff::modAdjdel(string name,string s){
-    /*Deletes a connection from the adjacency vertex of the name <s> of the
-    node containing the name <name>*/
+    /*Prototype:
+    void modAdjDel(string, string);
+
+    Description:
+    Deletes a connection from the adjacency vertex of the name 's' of the
+    node containing the name 'name'.  If there is no node with 'name' or
+    no connection 's', will explain that no such node/connection exists and
+    return.
+
+    Example:
+    G->modAdjdel("Living Room","Garage");
+
+    Precondition:
+    The vertex 'name' should exist and be connected to the vertex 's'.
+    Postcondition:
+    The vertex 's' is removed from the connections (adj) array of the vertex 'name'.
+    */
     int i=0;
     while(i<vertices.size() && vertices[i]->name != name){
         i++;
@@ -530,13 +749,42 @@ void Graff::modAdjdel(string name,string s){
 
 
 void Graff::rtimprint(){
-    //Prints the runtime (runT).
+    /*Prototype:
+    void rtimprint();
+    Description:
+    Prints the runtime (runT).
+        Will return the runtime of the last run function that tracks the
+        runtime (using the variable runT).
+
+    Example:
+    rtimprint();
+
+    Precondition:
+    Another function that tracks the runtime should have been run recently.  Assumes the runtime has
+    been reset before running the last function to track the runtime.
+    Postcondition:
+    The number of real operations are printed on the screen.
+    */
     cout<<"Function running time: "<<runT<<endl;
 }
 
 
 void Graff::rsltprint(vertex * v){
-    //prints the results of a given function from a vector of length versize
+    /*Prototype:
+    void rslprint(vertex *);
+
+    Description:
+    prints the results of a given function from a vector of length versize.  rsl stands for results.
+
+    Example:
+    reslprint(something);
+    (something is an array of vectors, length versize).
+
+    Precondition:
+    Assumes that the vector given exists - a NULL vector causes crashes.
+    Postcondition:
+    The name of each vector in 'v' is printed to the screen.
+    */
     for(int i=0;i < versize;i++){
         cout<<v[i].name<<" -> ";
     }
