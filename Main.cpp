@@ -15,10 +15,10 @@ void menu(){
     cout<<"4.  Breadth-first search"<<endl;
     cout<<"5.  Depth-first search"<<endl;
     cout<<"6.  Dijkstra weighted search"<<endl;
-    cout<<"7.  hashtable search"<<endl;
-    cout<<"8.  Delete an object"<<endl;
-    cout<<"9.  Delete a connection"<<endl;
-    cout<<"10. Print Graff"<<endl;
+    cout<<"7.  Delete an object"<<endl;
+    cout<<"8.  Delete a connection"<<endl;
+    cout<<"9.  Print Graff, unzoned"<<endl;
+    cout<<"10. Print Graff, Zoned"<<endl;
 }
 
 Graff * citiesReadFile(Graff * G, char**a,int n){
@@ -147,12 +147,11 @@ int main(int argv, char ** argc){
             getline(cin,s2);
             G->Dijkstra(s1,s2);
         }else if(iit==7){
-
-        }else if(iit==8){
+            cout<<"Input node to delete"<<endl;
             cin>>ws;
             getline(cin,s1);
             G->delV(s1);
-        }else if(iit==9){
+        }else if(iit==8){
             cout<<"Input node to modify"<<endl;
             cin>>ws;
             getline(cin,s1);
@@ -160,6 +159,8 @@ int main(int argv, char ** argc){
             cin>>ws;
             getline(cin,s2);
             G->modAdjdel(s1,s2);
+        }else if(iit==9){
+            G->displayEdges();
         }else if(iit==10){
             G->displayVertices();
         }

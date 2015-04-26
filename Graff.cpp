@@ -28,13 +28,13 @@ void Graff::addEdge(string v1, string v2, int weight){
     /*Adds edges (connections) for nodes already existing on the graph*/
     runT=0;
     for(int i = 0; i < vertices.size(); i++){
-        if(vertices[i].name == v1){
+        if(vertices[i]->name == v1){
             for(int j = 0; j < vertices.size(); j++){ //make sure start and end are both found before writing edge
-                if(vertices[j].name == v2 && i != j){
+                if(vertices[j]->name == v2 && i != j){
                     adjVertex av;          runT++; //make adjVertex
-                    av.v = &vertices[j];  runT++;  //set its pointer
+                    av.v = vertices[j];  runT++;  //set its pointer
                     av.weight = weight;   runT++;  //set weight
-                    vertices[i].adj.push_back(av); runT++;
+                    vertices[i]->adj.push_back(av); runT++;
                     //another vertex for edge in other direction (ensure symmetry for bidirectional edges)
                     /*adjVertex av2;
                     av2.v = &vertices[i];
@@ -52,16 +52,16 @@ void Graff::addVertex(string n){
     runT=0;
     bool found = false; runT++;
     for(int i = 0; i < vertices.size(); i++){
-        if(vertices[i].name == n){
+        if(vertices[i]->name == n){
             found = true; runT++;
-            cout<<vertices[i].name<<" found.  Please enter a different name/item."<<endl;
+            cout<<vertices[i]->name<<" found.  Please enter a different name/item."<<endl;
         }
     }
     if(found == false){
-        vertex v; runT++;
-        v.district = -1; runT++;
-        v.name = n; runT++;
-        v.visited = false;runT++;
+        vertex *v = new vertex; runT++;
+        v->district = -1; runT++;
+        v->name = n; runT++;
+        v->visited = false;runT++;
         vertices.push_back(v);runT++;
     }
 }
@@ -71,13 +71,15 @@ void Graff::displayEdges(){
     /*loops through all vertices and adjacent vertices
     and displays the connections of each
     */
-    for(int i = 0; i < vertices.size(); i++){
-        cout<<vertices[i].name<<"-->";
-        for(int j = 0; j < vertices[i].adj.size(); j++){ //for each element in vertices
-            cout<<vertices[i].adj[j].v->name<<"***";
+    int i=0;
+    for(i = 0; i < vertices.size(); i++){
+        cout<<vertices[i]->name<<"-->";
+        for(int j = 0; j < vertices[i]->adj.size(); j++){ //for each element in vertices
+            cout<<vertices[i]->adj[j].v->name<<"***";
         }
         cout<<endl;
     }
+    cout<<"Number of nodes: "<<i<<endl;
 }
 
 
@@ -87,23 +89,42 @@ void Graff::displayVertices(){
     by Justin Wilmes*/
     //loop through vertices:
     int i;
-    for(i = 0; i < vertices.size();i++){
-        cout<< vertices[i].district <<":"<<vertices[i].name<<"-->";
-        for(int j = 0;j<vertices[i].adj.size();j++){
-            cout<<vertices[i].adj[j].v->name;
-            if (j != vertices[i].adj.size()-1){
-                cout<<"***";
+    int ar[vertices.size()];
+    int t=0;
+    for(i=0;i<vertices.size();i++){
+        ar[i]=vertices[i]->district;
+        if(ar[i]>t)
+            t=ar[i];
+    }
+    if(t==0){
+        cout<<"Zones not determined."<<endl;
+        return;
+    }
+    int h=0;
+    int p=0;
+    int w=0;
+    for(i = t; i > 0;i--){
+        cout<<"Zone "<<i<<": ";
+        for(int j=0;j<vertices.size();j++){
+            if(vertices[j]->district==i){
+                h++;
+                cout<<vertices[j]->name<<",";
             }
         }
-        cout<<endl;
+        if(h>p){
+             p=h;
+             w=i;
+        }
+
     }
-    cout<<"Number of elements: "<<i<<endl;
+    cout<<endl<<"Total elements: "<<vertices.size()<<endl;
+    cout<<"Largest grouping: "<<p<<" from zone: "<<w<<endl;
     return;
 }
 
 
 void Graff::BFTraversal(string startingCity){
-/*A breadth-first traversal through the graph to determine connections
+/*A breadth-first traversal through the graph to determine connections.
     Created: April, 2015
 */
 //Pseudocode:
@@ -117,32 +138,32 @@ void Graff::BFTraversal(string startingCity){
                 Q.enqueue(w)
                 label w as discovered*/
     runT=0;
-    queue <vertex> Q; runT++;
+    queue <vertex *> Q; runT++;
     int i = 0;  runT++;
-    vertex v;  runT++;
+    vertex *v;  runT++;
     for(int i = 0; i < vertices.size(); i++){
-        vertices[i].visited = false;  runT++;
+        vertices[i]->visited = false;  runT++;
     }
     for(int j = 0; j < vertices.size(); j++){
-        if(vertices[j].name == startingCity){
+        if(vertices[j]->name == startingCity){
             v = vertices[j];  runT++;
-            v.visited = true;  runT++;
+            v->visited = true;  runT++;
         }
     }
     Q.push(v);   runT++;
-    v.visited = true;  runT++;
-    cout<<v.name<<endl;
-    vertex u;  runT++;
+    v->visited = true;  runT++;
+    cout<<v->name<<endl;
+    vertex *u;  runT++;
     while(!Q.empty()){
         u = Q.front();  runT++;
         Q.pop();
-        if(u.name!=v.name)
-            cout<<u.name<<endl;
-        for(i=0; i<u.adj.size(); i++){
-            if(u.adj[i].v->visited == false){
-                u.adj[i].v->visited = true;  runT++;
-                vertex * t = u.adj[i].v;  runT++;
-                Q.push(*t);  runT++;
+        if(u->name!=v->name)
+            cout<<u->name<<endl;
+        for(i=0; i<u->adj.size(); i++){
+            if(u->adj[i].v->visited == false){
+                u->adj[i].v->visited = true;  runT++;
+                vertex * t = u->adj[i].v;  runT++;
+                Q.push(t);  runT++;
             }
         }
     }
@@ -169,14 +190,14 @@ void Graff::Dijkstra(string start, string dest){
     }
     if(d->district<0){
         if(s->district==1){
-            BFS(*d,2);
-            BFS(*s,1);
+            BFS(d,2);
+            BFS(s,1);
         }else
-            BFS(*d,1);
+            BFS(d,1);
         visSet();
     }
     for(int j = 0; j < vertices.size(); j++){
-        vertices[j].distance = INT_MAX;
+        vertices[j]->distance = INT_MAX;
     }
     if(s->district != d->district){
         cout << "Path not found" << endl;
@@ -306,14 +327,14 @@ void Graff::findDistricts(){
     variable contained in each node as needed*/
     runT=0;
     for(int i=0;i<vertices.size();i++){
-        vertices[i].visited = false;  runT++;
+        vertices[i]->visited = false;  runT++;
     }
     queueVertex temp;  runT++;
     int dist = 1;  runT++;
     for(int i=0;i<vertices.size();i++){
-        if(vertices[i].visited == false){
+        if(vertices[i]->visited == false){
             BFS(vertices[i], dist);  runT++;
-            vertices[i].visited = true;  runT++;
+            vertices[i]->visited = true;  runT++;
             dist++;  runT++;
         }
     }
@@ -321,13 +342,14 @@ void Graff::findDistricts(){
 }
 
 
-void Graff::BFS(vertex s, int k){
+void Graff::BFS(vertex *s, int k){
     /*Conducts a breadth-first search on the Graff to determine which nodes are
-    connected, and sets a grouping variable contained in each node as needed*/
-    s.visited = true;  runT++;
-    s.district = k;  runT++;
+    connected, and sets a grouping variable contained in each node as needed.
+    Is used by other functions to determine the connectivity of the Graff.*/
+    s->visited = true;  runT++;
+    s->district = k;  runT++;
     queue<vertex *> Q;  runT++;
-    Q.push(&s);  runT++;
+    Q.push(s);  runT++;
     vertex *u;  runT++;
     vertex *v;  runT++;
     while(!Q.empty()){
@@ -350,9 +372,9 @@ void Graff::visSet(){
     /*Sets the initial conditions needed by every traversal/search/distance algorithm
     in this graph (Graff) implementation*/
     for(int j=0;j<vertices.size();j++){
-        vertices[j].visited = false;  runT++;
-        vertices[j].previous = NULL;   runT++;
-        vertices[j].distance = 0;    runT++;
+        vertices[j]->visited = false;  runT++;
+        vertices[j]->previous = NULL;   runT++;
+        vertices[j]->distance = 0;    runT++;
     }
 }
 
@@ -360,9 +382,9 @@ void Graff::visSet(){
 vertex * Graff::Vfinder(string s,vertex * v){
     v=NULL;  runT++;
     int i=0; runT++;
-    v=&vertices[i++]; runT++;
+    v=vertices[i++]; runT++;
     while(i<vertices.size() && v->name!=s){
-        v=&vertices[i++]; runT++;
+        v=vertices[i++]; runT++;
     }
     return v;
 }
@@ -381,9 +403,13 @@ queueVertex * Graff::DFSearch(string start, string destination){
         cout << "One or more cities doesn't exist" << endl;
         return NULL;
     }
-    if(s->district<0){
-        BFS(*s,1);
-        BFS(*d,2);
+    if(d->district<0){
+        if(s->district==1){
+            BFS(d,2);
+            BFS(s,1);
+        }else
+            BFS(d,1);
+        visSet();
     }
     if(s->district != d->district){
         cout << "Path not found" << endl;
@@ -415,16 +441,19 @@ queueVertex * Graff::DFSearch(string start, string destination){
         v->visited=true;  runT++;
         m=v->distance;  runT++;
         for(j=0;j < v->adj.size();j++){
-            if(v->adj[i].v->visited == false){
-                v->adj[i].v->previous = v;  runT++;
+            if(v->adj[j].v->visited == false){
+                v->adj[j].v->previous = v;  runT++;
                 q.push_back(v->adj[j].v);  runT++;
-                v->adj[i].v->distance = m+1;  runT++;
+                v->adj[j].v->distance = m+1;  runT++;
             }
         }
     }
+    cout<<v->distance<<endl;
     vertex * t=d;
+    cout<<t->name;
+    t=t->previous;
     while(t->previous!=NULL){
-        cout<<t->name<<" -> ";
+        cout<<" -> "<<t->name;
         t=t->previous;
     }
     cout<<endl<<d->distance<<endl;
@@ -432,10 +461,10 @@ queueVertex * Graff::DFSearch(string start, string destination){
 }
 
 
-int Graff::hashSum(string x, int s){
+/*int Graff::hashSum(string x, int s){
     /*Contains a hash-sum used by the hashtable contained within the Graff function.
     It is not to be confused with other hash-table functions potentionally used by a function
-    calling Graff*/
+    calling Graff*//*
     //x is string to hash, s is array size
     int sum = 0;  runT++;
     for(int i = 0;i<x.length();i++){
@@ -443,20 +472,36 @@ int Graff::hashSum(string x, int s){
     }
     sum = sum % s;  runT++;
     return sum;  runT++;
-}
+}*/
 
 
 
 void Graff::delV(string name){
     /*Deletes the node containing the string name*/
-    int i=0;
-    while(vertices[i].name != name && i<vertices.size()){
-        i++;
+    int h=0;
+    //find node
+    while(vertices[h]->name != name && h<vertices.size()){
+        h++;
     }
-    if(i>=vertices.size()){
+    if(h>=vertices.size()){
         cout<<"Node "<<name<<" does not exist"<<endl;
+        return;
+    }else{
+    vertex * a=vertices[h];
+    vertex * temp;
+    //delete connections to node
+    for(int i=0;i<vertices.size();i++){
+        for(int j=0;j<vertices[i]->adj.size();j++){
+            temp = vertices[i];
+            if(temp->adj[j].v==a){
+                modAdjdel(temp->name,name);
+            }
+        }
     }
-    vertices.erase(vertices.begin()+i);
+    //delete node
+    cout<<"Deleting "<<a->name<<" from position "<<h<<endl;
+    vertices.erase(vertices.begin()+h);
+    }
 }
 
 
@@ -464,14 +509,14 @@ void Graff::modAdjdel(string name,string s){
     /*Deletes a connection from the adjacency vertex of the name <s> of the
     node containing the name <name>*/
     int i=0;
-    while(i<vertices.size() && vertices[i].name != name){
+    while(i<vertices.size() && vertices[i]->name != name){
         i++;
     }
     if(i>=vertices.size()){
         cout<<"Node "<<name<<" does not exist"<<endl;
         return;
     }
-    vertex * v=&vertices[i];
+    vertex * v=vertices[i];
     i=0;
     while(i<v->adj.size() && v->adj[i].v->name != s){
         i++;

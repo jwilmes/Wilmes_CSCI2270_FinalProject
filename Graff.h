@@ -70,11 +70,11 @@ public:
         void modAdjdel(string name,string s);
 protected:
 private:
-    vector<vertex> vertices;
+    vector<vertex*> vertices;
     int runT;
     int versize;
-    int hashSum(string s, int i);
-    void BFS(vertex v,int i);
+    //int hashSum(string s, int i);
+    void BFS(vertex *v,int i);
     void visSet();
     vertex * Vfinder(string s, vertex * v);
     void rtimprint();
