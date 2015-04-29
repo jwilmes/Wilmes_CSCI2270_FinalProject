@@ -64,6 +64,7 @@ public:
         void Dijkstra(string starting, string destination);
         void displayVertices();
         queueVertex * BFSearch(string city, string destination);
+        void addEdgeUND(string v1, string v2, int weight);
     //new graph-type functions
         queueVertex * DFSearch(string start, string destination);
         void delV(string name);

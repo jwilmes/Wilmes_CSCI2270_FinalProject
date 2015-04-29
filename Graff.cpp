@@ -52,6 +52,50 @@ Graff::~Graff(){
 }
 
 
+void Graff::addEdgeUND(string v1, string v2, int weight){
+    /*Prototype:
+    void addEdgeUND(string, string, int);
+
+    Description:
+    Adds edges (connections) for nodes already existing on the graph.
+        Creates a non-directional path between the node containing v1 and the
+        node containing v2.
+
+    Example:
+    addEdge("Freezer","Oven",5);
+
+    Precondition:
+    Expects two strings and an int.  Other input will cause glitches or crashes.  There should be more than one
+    node/vertex in existences before trying to create connections.
+    Postcondition:
+    The adjacency matrix of the node 'v1' is updated to include a path to node 'v2' of weight 'weight'.
+    */
+    runT=0;
+    int i;
+    bool n=false;
+    for(i = 0; i < vertices.size(); i++){
+        if(vertices[i]->name == v1){
+            n=true;
+            for(int j = 0; j < vertices.size(); j++){ //make sure start and end are both found before writing edge
+                if(vertices[j]->name == v2 && i != j){
+                    adjVertex av;          runT++; //make adjVertex
+                    av.v = vertices[j];  runT++;  //set its pointer
+                    av.weight = weight;   runT++;  //set weight
+                    vertices[i]->adj.push_back(av); runT++;
+                    //another vertex for edge in other direction (ensure symmetry for bidirectional edges)
+                    adjVertex av2;
+                    av2.v = vertices[i];
+                    av2.weight = weight;
+                    vertices[j]->adj.push_back(av2);
+                }
+            }
+        }
+    }
+    if(n==false){
+        cout<<"Origin of connection does not exist"<<endl;
+    }
+}
+
 void Graff::addEdge(string v1, string v2, int weight){
     /*Prototype:
     void addEdge(string, string, int);
@@ -71,8 +115,11 @@ void Graff::addEdge(string v1, string v2, int weight){
     The adjacency matrix of the node 'v1' is updated to include a path to node 'v2' of weight 'weight'.
     */
     runT=0;
-    for(int i = 0; i < vertices.size(); i++){
+    int i;
+    bool n=false;
+    for(i = 0; i < vertices.size(); i++){
         if(vertices[i]->name == v1){
+            n=true;
             for(int j = 0; j < vertices.size(); j++){ //make sure start and end are both found before writing edge
                 if(vertices[j]->name == v2 && i != j){
                     adjVertex av;          runT++; //make adjVertex
@@ -88,7 +135,7 @@ void Graff::addEdge(string v1, string v2, int weight){
             }
         }
     }
-    if(i>=vertices.size()){
+    if(n==false){
         cout<<"Origin of connection does not exist"<<endl;
     }
 }
@@ -351,12 +398,16 @@ void Graff::Dijkstra(string start, string dest){
         t2->previous = t1; runT++;
         //cout<<t2->distance<<endl;
     }
-    cout<<t2->distance;
-    versize=solved.size();
-    for(int i=0;i<versize;i++){
+    cout<<"Distance: "<<t2->distance<<endl;
+    //versize=solved.size();
+    /*for(int i=0;i<versize;i++){
         cout<<","<<solved[i]->name;
+    }*/
+    while(t2->previous){
+        cout<<t2->name<<" <- ";
+        t2=t2->previous;
     }
-    cout<<endl;
+    cout<<t2->name<<endl;
     rtimprint();
     versize=0;
 }
@@ -621,30 +672,36 @@ queueVertex * Graff::DFSearch(string start, string destination){
     s->previous=NULL;
     //Pseudocode:
     //void Graph::DFSearch(string startingCity, string destination){
-        /*let Q be a queue
-     Q.enqueue(v)
-     label v as discovered
-     while Q is not empty
-        v ← Q.dequeue()
-        for all edges from v to w in G.adjacentEdges(v) do
-            if w is not labeled as discovered
-                Q.enqueue(w)
-                label w as discovered*/
+    /*
+    for each vertex u in G.V except origin
+    o.visited = true
+    S=empty //(stack)
+    S.push(o)
+    while S is not empty
+        u = S.pop()
+        output u
+        for all edges v in G.adjacentEdges(u)
+            if v.visited = false
+                v.visited = true
+                S.push(v)
+    */
     vertex * v = s;  runT++;
     int i=0;  runT++;
     int j=0;  runT++;
     vector<vertex *> q;  runT++;
     q.push_back(v);  runT++;
-    int m;  runT++;
+    v->visited=true;
+    int m=0;  runT++;
     d->distance=1;  runT++;
     while(!q.empty()){
         v=q.back();  runT++;
         q.pop_back();  runT++;
-        v->visited=true;  runT++;
+        //v->visited=true;  runT++;
         m=v->distance;  runT++;
         for(j=0;j < v->adj.size();j++){
             if(v->adj[j].v->visited == false){
                 v->adj[j].v->previous = v;  runT++;
+                v->adj[j].v->visited = true;
                 q.push_back(v->adj[j].v);  runT++;
                 v->adj[j].v->distance = m+1;  runT++;
             }
@@ -654,11 +711,18 @@ queueVertex * Graff::DFSearch(string start, string destination){
     vertex * t=d;
     cout<<t->name;
     t=t->previous;
+    bool chc = false;
+    for(int i=0;i<s->adj.size();i++){
+        if(s->adj[i].v->name == t->name)
+            chc=true;
+    }
     while(t->previous!=NULL){
-        cout<<" -> "<<t->name;
+        cout<<" <- "<<t->name;
         t=t->previous;
     }
-    cout<<endl<<d->distance<<endl;
+    if(chc==true)
+        cout<<" <-" <<s->name;
+    cout<<endl<<"Distance: "<<d->distance<<endl;
     rtimprint();
 }
 
