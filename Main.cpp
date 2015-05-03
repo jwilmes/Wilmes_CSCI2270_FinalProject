@@ -98,7 +98,7 @@ int main(int argv, char ** argc){
     //inputs loop
     while(iit!=0 || s1 != "quit" || s1!="Quit" || iit!=11){
         menu();
-        cin>>ws;
+        
         getline(cin,s1);
         if(s1=="quit"||s1=="Quit"||s1=="Break",s1=="break"||s1=="0"||s1=="11"){
             break;
@@ -106,15 +106,15 @@ int main(int argv, char ** argc){
         iit=atoi(s1.c_str());
         if(iit==1){
             cout<<"Enter a name:"<<endl;
-            cin>>ws;
+            
             getline(cin,s1);
             G->addVertex(s1);
         }else if(iit==2){
             cout<<"Enter item name:"<<endl;
-            cin>>ws;
+            
             getline(cin,s1);
             cout<<"Enter connection's name:"<<endl;
-            cin>>ws;
+            
             getline(cin,s2);
             cout<<"Enter weighting (integer, please):"<<endl;
             cin>>data;
@@ -124,39 +124,39 @@ int main(int argv, char ** argc){
             cout<<"Organized."<<endl;
         }else if(iit==4){
             cout<<"Enter start name:"<<endl;
-            cin>>ws;
+            
             getline(cin,s1);
             cout<<"Enter destination name:"<<endl;
-            cin>>ws;
+            
             getline(cin,s2);
             G->BFSearch(s1,s2);
         }else if(iit==5){
             cout<<"Enter start name:"<<endl;
-            cin>>ws;
+            
             getline(cin,s1);
             cout<<"Enter destination name:"<<endl;
-            cin>>ws;
+            
             getline(cin,s2);
             G->DFSearch(s1,s2);
         }else if(iit==6){
             cout<<"Enter start name:"<<endl;
-            cin>>ws;
+            
             getline(cin,s1);
             cout<<"Enter destination name:"<<endl;
-            cin>>ws;
+            
             getline(cin,s2);
             G->Dijkstra(s1,s2);
         }else if(iit==7){
             cout<<"Input node to delete"<<endl;
-            cin>>ws;
+            
             getline(cin,s1);
             G->delV(s1);
         }else if(iit==8){
             cout<<"Input node to modify"<<endl;
-            cin>>ws;
+            
             getline(cin,s1);
             cout<<"Input connection to delete"<<endl;
-            cin>>ws;
+            
             getline(cin,s2);
             G->modAdjdel(s1,s2);
         }else if(iit==9){
